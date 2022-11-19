@@ -33,19 +33,9 @@ async def read_item(
     return check_if_prime(number)
 
 
-@app.post("/upload-photo")
-async def read_item(file: UploadFile = File(..., format=".jpeg")):
-    save_image(file, file.filename)
-    move_image(file.filename)
-    return {"name_of_file": file.filename}
-
-
-@app.get("/picture/invert/{filename}")
-async def display_photo(request: Request, filename: str = Path(
-    description="The name of the file"
-)):
-    invert_photo_colors(filename)
-    return StreamingResponse(display_image(filename), media_type="image/png")
+@app.post("/invertpicture")
+def invertpicture(file: bytes = File()):
+    return invert_picture_colors(file)
 
 
 @app.post("/token")
@@ -58,3 +48,18 @@ async def generate_token(form_data: OAuth2PasswordRequestForm = Depends()):
 async def authenticate(token: str = Depends(oauth_scheme)):
     print(token)
     return {get_time()}
+
+
+# @app.post("/upload-photo")
+# async def read_item(file: UploadFile = File(..., format=".jpeg")):
+#     save_image(file, file.filename)
+#     move_image(file.filename)
+#     return {"name_of_file": file.filename}
+#
+#
+# @app.get("/picture/invert/{filename}")
+# async def display_photo(request: Request, filename: str = Path(
+#     description="The name of the file"
+# )):
+#     invert_photo_colors(filename)
+#     return StreamingResponse(display_image(filename), media_type="image/png")

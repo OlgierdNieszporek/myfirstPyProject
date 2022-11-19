@@ -39,6 +39,7 @@ def invert_photo_colors(filename):
         inverted_image.save('images/images_inverted/' + no_suffix_filename + '.png')
     return 0
 
+
 def remove_suffix(filename):
     filename = re.sub('\.JPG$', '', filename)
     return filename
@@ -48,3 +49,19 @@ def display_image(filename):
     image_to_print = remove_suffix(filename) + ".png"
     with open('images/images_inverted/' + image_to_print, mode="rb") as file_like:
         yield from file_like
+
+
+from fastapi import File
+from PIL import Image
+import PIL.ImageOps
+import io
+from fastapi.responses import StreamingResponse
+
+
+def invert_picture_colors(file: bytes = File()):
+    input = Image.open(io.BytesIO(file))
+    inverted = PIL.ImageOps.invert(input)
+    response = io.BytesIO()
+    inverted.save(response, "JPEG")
+    response.seek(0)
+    return StreamingResponse(response, media_type="image/jpeg")
